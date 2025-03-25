@@ -1,0 +1,29 @@
+# Ignore all data files (raw and processed)
+data/*.csv
+data/*.dta
+
+# Ignore output visualizations and R output
+output/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environment files
+*.env
+*.venv/
+.venv/
+env/
+venv/
+
+# VS Code settings
+.vscode/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db

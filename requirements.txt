@@ -19,3 +19,4 @@ threadpoolctl==3.6.0
 tzdata==2025.1
 xgboost==3.0.0
 python>=3.10
+statsmodels==0.14.1

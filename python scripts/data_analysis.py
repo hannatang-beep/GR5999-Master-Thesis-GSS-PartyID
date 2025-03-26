@@ -54,7 +54,7 @@ def analyze_gss_variables(file_path):
 
         var_df = pd.DataFrame(var_info)
         var_df = var_df.sort_values('non_null_count', ascending=False)
-        var_df.to_csv('gss_variable_analysis.csv', index=False)
+        var_df.to_csv('output/gss_variable_analysis.csv', index=False)
         print("\nVariable analysis saved to 'gss_variable_analysis.csv'")
 
         print(f"\nTotal variables: {len(var_df)}")

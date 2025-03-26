@@ -4,6 +4,12 @@ This project prepares General Social Survey (GSS) data for modeling political pa
 
 Below is an overview of each Python module and its role in the data pipeline.
 
+## 🧠 Key Features
+- Handles variable selection using LASSO with VIF filtering
+- Supports missing data imputation and variable encoding
+- Compares logistic regression with tree-based classifiers (Random Forest, XGBoost)
+- Outputs cleaned datasets and publication-ready summary tables for appendices
+
 ## 🧹 Files Overview
 
 ### `data_analysis.py`
@@ -80,10 +86,11 @@ Core modeling script for 3-category party ID outcome.
 
 ### `appendix_a.py`
 
-**Purpose:**
+- Generate summary tables used in Appendices A.1–A.3:
+  - `appendix_a_variable_summary.csv` – final model variables
+  - `appendix_a2_categorical_summary.csv` – frequency tables
+  - `appendix_a3_continuous_summary.csv` – descriptive stats
 
-- Summarize variable metadata by category
-- Export to CSV for use in Appendix A of thesis
 
 
 ## 📂 Folder Structure

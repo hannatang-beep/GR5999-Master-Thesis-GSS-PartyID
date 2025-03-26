@@ -8,70 +8,147 @@ Below is an overview of each Python module and its role in the data pipeline.
 
 ### `data_analysis.py`
 
-**Purpose**
+**Purpose:**
 
 - Load the full GSS dataset (`.dta` format)
 - Inspect all available variables
 - Analyze missing values, data types, and year availability
 - Categorize variables into themes (e.g., demographic, economic, religious)
 
-**Use case**
+**Use case:**  
+Used for early-stage exploratory data analysis and to guide variable selection decisions.
 
-- Early-stage exploratory data analysis
-- Used to decide which variables to keep for modeling
+---
 
 ### `data_filtering.py`
 
-**Purpose**
+**Purpose:**
 
-- Load the GSS dataset
-- Filter observations from 2006–2021 (to cover full election cycles)
-- Retain only the selected key variables
-- Create `election_cycle` variable based on year
-- Export cleaned dataset as `data/gss_2008_2020.csv`
+- Load and filter GSS data from 2006–2021
+- Select a consistent set of key variables
+- Add an `election_cycle` variable based on year
+- Output cleaned dataset to `data/gss_2008_2020.csv`
 
-**Use case**
+**Use case:**  
+Prepares the full working dataset for all downstream modeling.
 
-- Prepares full working dataset for downstream model-building
+---
 
 ### `generate_gss_2008_2012_partyid3.py`
 
-**Purpose**
+**Purpose:**
 
-- Load the filtered dataset from `data/gss_2008_2020.csv`
-- Subset the data to years 2008–2012 (inclusive)
-- Create a new 3-category target variable `partyid_3cat`
-  - 0 = Democrat (original GSS codes 0–2)
-  - 1 = Independent (code 3)
-  - 2 = Republican (codes 4–6)
-- Standardize all column names to lowercase
-- Export result to `data/gss_2008_2012_partyid3.csv`
+- Subset the dataset to include only years 2008–2012
+- Recode GSS `partyid` into a new 3-category outcome variable:  
+  - 0 = Democrat (original 0–2)  
+  - 1 = Independent (3)  
+  - 2 = Republican (4–6)
+- Convert column names to lowercase
+- Save as `data/gss_2008_2012_partyid3.csv`
 
-**Use case**
+**Use case:**  
+Creates the modeling-ready dataset for predicting partisan identification.
 
-- Creates the final training dataset for modeling political alignment
+---
+
+### `check_missing_model_vars.py`
+
+**Purpose:**
+
+- Report missingness for selected modeling variables
+- Evaluate sample size loss if dropping all rows with missing values
+- Export missing value report to CSV
+
+**Use case:**  
+To guide imputation or variable exclusion decisions.
+
+---
+
+### `run_lasso_vif_pipeline.py`
+
+**Purpose:**
+
+- Perform multinomial logistic regression with LASSO
+- Select variables via non-zero coefficients
+- Remove multicollinearity using Variance Inflation Factor (VIF)
+- Train final logistic regression model
+
+**Use case:**  
+Core modeling script for 3-category party ID outcome.
+
+---
+
+### `appendix_a.py`
+
+**Purpose:**
+
+- Summarize variable metadata by category
+- Export to CSV for use in Appendix A of thesis
+
 
 ## 📂 Folder Structure
 
 ```
 project_root/
-├── data/                          # Contains filtered and processed CSV files
+├── data/                          # Intermediate datasets
 │   ├── gss_2008_2020.csv
 │   └── gss_2008_2012_partyid3.csv
-├── output/                        # Plots, summaries, intermediate exports
-│   └── gss_variable_analysis.csv
-├── python scripts/               # All core Python code files
+├── output/                        # Results, plots, appendix exports
+│   ├── gss_variable_analysis.csv
+│   ├── model_var_missing_report.csv
+│   ├── top20_multinomial_coef_plot.png
+│   ├── vif_table.csv
+│   └── appendix_a_variable_summary.csv
+├── python scripts/                # All analysis code
 │   ├── data_analysis.py
 │   ├── data_filtering.py
 │   ├── generate_gss_2008_2012_partyid3.py
-│   └── step_multiclass_model.py
-├── README.md                     # Project overview (this file)
-├── .gitignore                    # Files/folders excluded from Git
-└── requirements.txt              # Python package dependencies
+│   ├── check_missing_model_vars.py
+│   ├── run_lasso_vif_pipeline.py
+│   └── appendix_a.py
+├── requirements.txt              # Python dependencies
+├── .gitignore                    # Exclude local files from GitHub
+└── README.md                     # Project overview (this file)
 ```
 
-## ✨ Notes
+---
 
-- `partyid_3cat` is used as the dependent variable in classification models.
-- Variables with high missingness (e.g., `abany`, `gunlaw`) are retained for review but may be excluded.
-- All data outputs are saved under `/data/` or `/output/` and excluded from GitHub by `.gitignore`.
+## 📎 Appendix Reference
+
+| Appendix | File | Description |
+|----------|------|-------------|
+| A | `appendix_a_variable_summary.csv` | Variable metadata and categories |
+| C | `vif_table.csv` | VIF results after LASSO |
+| (Chapter 4) | `top20_multinomial_coef_plot.png` | Top 20 predictors from multinomial model |
+
+> Note: Code snippets will be included in **Appendix E** (not committed yet)
+
+---
+
+## 🧠 Script Execution Guide
+
+| Script | When to Run | Output |
+|--------|-------------|--------|
+| `data_analysis.py` | Run if you want to review or update variable summaries | `output/gss_variable_analysis.csv` |
+| `data_filtering.py` | Run if `.dta` file or key variable list changes | `data/gss_2008_2020.csv` |
+| `generate_gss_2008_2012_partyid3.py` | Run to refresh 2008–2012 modeling dataset | `data/gss_2008_2012_partyid3.csv` |
+| `check_missing_model_vars.py` | Run if modeling variable list or missing logic changes | `output/model_var_missing_report.csv` |
+| `run_lasso_vif_pipeline.py` | Run to retrain models and output final results | `output/` folder files |
+| `appendix_a.py` | Run to export clean appendix-ready variable table | `output/appendix_a_variable_summary.csv` |
+
+---
+
+## 🛠️ Environment Setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+---
+
+## ✅ Notes
+
+- All outputs (.csv, .png) are saved to /output/ and excluded from GitHub tracking via .gitignore
+- Modeling emphasizes interpretability (via LASSO + VIF) and class balance
+- Appendices are generated using scripts to ensure reproducibility

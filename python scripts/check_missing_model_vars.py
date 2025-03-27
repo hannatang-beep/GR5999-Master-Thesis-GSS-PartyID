@@ -1,15 +1,28 @@
-# check_missing_model_vars.py
+# =============================================================================
+# File: check_missing_model_vars.py
+# 
+# Purpose:
+# - Check the availability and missingness of key modeling variables.
+# - Provide a summary table of non-null counts and missing value rates.
+# - Help identify variables with excessive missingness before modeling.
+#
+# Notes:
+# - This script should be run after the full GSS dataset has been filtered.
+# - The key variable list should match the one used in modeling scripts.
+# - Output: 'output/model_var_missing_report.csv' for reference and documentation.
+# =============================================================================
+
 
 import pandas as pd
 
-# === Step 1: Load modeling dataset ===
+# Load modeling dataset
 file_path = "data/gss_2008_2012_partyid3.csv"
 df = pd.read_csv(file_path)
 
 print("\n✅ Loaded dataset:", file_path)
 print("Shape:", df.shape)
 
-# === Step 2: Calculate missing value percentage ===
+# Calculate missing value percentage 
 missing_report = (
     df.isnull().sum()
     .to_frame(name="missing_count")
@@ -17,10 +30,10 @@ missing_report = (
     .sort_values("percent_missing", ascending=False)
 )
 
-# Optional: Only show variables with > 0% missing
+# Only show variables with > 0% missing
 missing_report = missing_report[missing_report["percent_missing"] > 0]
 
-# === Step 3: Output result ===
+# Output result 
 print("\n Missing Value Summary (sorted):\n")
 print(missing_report)
 
@@ -28,7 +41,7 @@ print(missing_report)
 missing_report.to_csv("output/model_var_missing_report.csv")
 print("\n Report saved to: output/model_var_missing_report.csv")
 
-# === Step 4: Check how many rows remain after dropping missing values ===
+# Check how many rows remain after dropping missing values ===
 
 # Define final modeling variables (including target)
 modeling_vars = [
@@ -41,7 +54,7 @@ modeling_vars = [
 df_model = df[modeling_vars].dropna()
 print(f"\n✅ Remaining observations after dropping missing: {len(df_model)}")
 
-# === Step 5: Plot missing value bar chart ===
+# Plot missing value bar chart ===
 import matplotlib.pyplot as plt
 
 # Create a DataFrame with missing values for modeling variables

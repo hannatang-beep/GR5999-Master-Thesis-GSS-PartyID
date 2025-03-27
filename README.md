@@ -7,8 +7,8 @@ Below is an overview of each Python module and its role in the data pipeline.
 ## 🧠 Key Features
 - Performs variable selection using LASSO with cross-validation and VIF filtering.
 - Constructs a final multinomial logistic regression model based on LASSO-VIF selected predictors.
-- Compares this model with tree-based classifiers (Random Forest, XGBoost) using the same set of predictors.
-- Includes 5-fold stratified cross-validation and performance metrics (accuracy, macro F1, AUC, Brier).
+- Compares multinomial logistic regression model with tree-based classifiers (Random Forest, XGBoost)
+- IUses 5-fold stratified cross-validation to tune hyperparameters and evaluate model performance(accuracy, macro F1, AUC, Brier).
 - Outputs publication-ready tables and figures for all model results and appendices.
 
 ## 🧹 Files Overview
@@ -133,16 +133,21 @@ project_root/
 
 ---
 
-## 🧠 Script Execution Guide
+## 📎 Appendix Reference
 
-| Script | When to Run | Output |
-|--------|-------------|--------|
-| `data_analysis.py` | Run if you want to review or update variable summaries | `output/gss_variable_analysis.csv` |
-| `data_filtering.py` | Run if `.dta` file or key variable list changes | `data/gss_2008_2020.csv` |
-| `generate_gss_2008_2012_partyid3.py` | Run to refresh 2008–2012 modeling dataset | `data/gss_2008_2012_partyid3.csv` |
-| `check_missing_model_vars.py` | Run if modeling variable list or missing logic changes | `output/model_var_missing_report.csv` |
-| `run_lasso_vif_pipeline.py` | Run to retrain models and output final results | `output/` folder files |
-| `appendix_a.py` | Run to export clean appendix-ready variable table | `output/appendix_a_variable_summary.csv` |
+| Appendix | File | Description |
+|----------|------|-------------|
+| A.1 | `appendix_a_variable_summary.csv` | Metadata for final modeling variables (non-missing counts, categories) |
+| A.2 | `appendix_a2_categorical_summary.csv` | Distribution of categorical predictors used in the model |
+| A.3 | `appendix_a3_continuous_summary.csv` | Summary statistics (mean, std, min, max) for continuous variables |
+| B | `final_model_coefficients.csv` | Coefficient estimates from the final multinomial logistic regression model |
+| C | `vif_table_full.csv` | Variance Inflation Factor values after LASSO selection |
+| (Figure 4.1) | `top20_multinomial_coef_plot.png` | Top 20 predictors visualization from multinomial model |
+| D | (Not yet committed) | Results and configuration for Random Forest & XGBoost |
+| E | (Not yet committed) | Code snippets for all major modeling stages |
+
+> 💡 *All appendix files are stored in the `/output/` folder.*
+
 
 ---
 

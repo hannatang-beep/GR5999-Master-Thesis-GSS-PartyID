@@ -5,10 +5,11 @@ This project prepares General Social Survey (GSS) data for modeling political pa
 Below is an overview of each Python module and its role in the data pipeline.
 
 ## 🧠 Key Features
-- Handles variable selection using LASSO with VIF filtering
-- Supports missing data imputation and variable encoding
-- Compares logistic regression with tree-based classifiers (Random Forest, XGBoost)
-- Outputs cleaned datasets and publication-ready summary tables for appendices
+- Performs variable selection using LASSO with cross-validation and VIF filtering.
+- Constructs a final multinomial logistic regression model based on LASSO-VIF selected predictors.
+- Compares this model with tree-based classifiers (Random Forest, XGBoost) using the same set of predictors.
+- Includes 5-fold stratified cross-validation and performance metrics (accuracy, macro F1, AUC, Brier).
+- Outputs publication-ready tables and figures for all model results and appendices.
 
 ## 🧹 Files Overview
 

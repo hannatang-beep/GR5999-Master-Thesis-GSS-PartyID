@@ -12,12 +12,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# === Step 1: Load data ===
+# Load dataset  
 file_path = "./data/gss_2008_2012_partyid3.csv"
 df = pd.read_csv(file_path)
 print(f"\n✅ Loaded dataset: {file_path} — shape: {df.shape}")
 
-# === Step 2: Define target and features ===
+# Define target and features 
 target = "partyid_3cat"
 features = [
     "age", "sex", "race", "educ", "degree", "income", "wrkstat",
@@ -25,7 +25,7 @@ features = [
     "relig", "reliten", "attend", "polviews"
 ]
 
-# === Step 3: Handle missing values ===
+# Handle missing values
 continuous_vars = ["age", "educ", "income", "sei", "hrs1"]
 categorical_vars = list(set(features) - set(continuous_vars))
 
@@ -35,7 +35,7 @@ df[continuous_vars] = SimpleImputer(strategy="median").fit_transform(df[continuo
 # Mode imputation for categorical variables
 df[categorical_vars] = SimpleImputer(strategy="most_frequent").fit_transform(df[categorical_vars])
 
-# === Step 4: Encode categorical variables ===
+# Encode categorical variables
 ohe = OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")
 X_cat = ohe.fit_transform(df[categorical_vars])
 X_cat_cols = ohe.get_feature_names_out(categorical_vars)
@@ -47,11 +47,11 @@ X_all = pd.concat([
 ], axis=1)
 y = df[target]
 
-# === Step 5: Normalize ===
+# Normalize 
 scaler = StandardScaler()
 X_scaled = pd.DataFrame(scaler.fit_transform(X_all), columns=X_all.columns)
 
-# === Step 6: LASSO Multinomial Logistic Regression ===
+# LASSO Multinomial Logistic Regression 
 lasso_model = LogisticRegressionCV(
     Cs=10,
     cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=42),
@@ -70,7 +70,7 @@ coef_matrix = pd.DataFrame(lasso_model.coef_, columns=X_scaled.columns)
 selected_vars = coef_matrix.columns[(coef_matrix != 0).any(axis=0)].tolist()
 print(f"\n📌 Variables selected by LASSO: {len(selected_vars)}")
 
-# === Step 7: VIF Filtering ===
+# VIF Filtering 
 X_vif = X_scaled[selected_vars].copy()
 
 while True:
@@ -88,7 +88,7 @@ while True:
 
 print(f"\n✅ Final predictors after VIF filtering: {X_vif.shape[1]} variables")
 
-# === Step 8: Fit Final Model ===
+# Fit Final Model
 final_model = LogisticRegression(
     penalty=None,
     solver="lbfgs",
@@ -97,7 +97,7 @@ final_model = LogisticRegression(
 final_model.fit(X_vif, y)
 print("\n✅ Final model trained")
 
-# === Step 9: Export selected variables ===
+# Export selected variables
 X_vif.to_csv("output/final_X_after_vif.csv", index=False)
 coef_df = pd.DataFrame(final_model.coef_, columns=X_vif.columns)
 coef_df.to_csv("output/final_model_coefficients.csv", index=False)

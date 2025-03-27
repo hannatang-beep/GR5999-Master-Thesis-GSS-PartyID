@@ -14,14 +14,14 @@
 
 import pandas as pd
 
-# === 1. Load filtered full dataset ===
+# Load filtered full dataset
 input_path = "./data/gss_2008_2020.csv"
 df = pd.read_csv(input_path)
 
-# === 2. Filter for years 2008 to 2012 ===
+# Filter for years 2008 to 2012
 df = df[df["year"].between(2008, 2012)].copy()
 
-# === 3. Create partyid_3cat variable ===
+# Create partyid_3cat variable
 # Mapping: 0–2 -> Democrat (0), 3 -> Independent (1), 4–6 -> Republican (2)
 partyid_map = {
     0: 0, 1: 0, 2: 0,
@@ -31,10 +31,10 @@ partyid_map = {
 df = df[df["partyid"].isin(partyid_map.keys())].copy()
 df["partyid_3cat"] = df["partyid"].map(partyid_map)
 
-# === 4. Standardize column names to lowercase ===
+# Standardize column names to lowercase
 df.columns = [col.lower() for col in df.columns]
 
-# === 5. Save to new file ===
+# Save to new file
 output_path = "./data/gss_2008_2012_partyid3.csv"
 df.to_csv(output_path, index=False)
 print(f"✅ Cleaned dataset saved to: {output_path}")

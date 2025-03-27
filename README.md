@@ -8,8 +8,8 @@ Below is an overview of each Python module and its role in the data pipeline.
 - Performs variable selection using LASSO with cross-validation and VIF filtering.
 - Constructs a final multinomial logistic regression model based on LASSO-VIF selected predictors.
 - Compares multinomial logistic regression model with tree-based classifiers (Random Forest, XGBoost)
-- IUses 5-fold stratified cross-validation to tune hyperparameters and evaluate model performance(accuracy, macro F1, AUC, Brier).
-- Outputs publication-ready tables and figures for all model results and appendices.
+- Uses 5-fold stratified cross-validation to tune hyperparameters and evaluate model performance(accuracy, macro F1, AUC, Brier).
+- Outputs tables and figures for all model results and appendices.
 
 ## 🧹 Files Overview
 

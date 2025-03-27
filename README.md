@@ -125,18 +125,6 @@ project_root/
 
 | Appendix | File | Description |
 |----------|------|-------------|
-| A | `appendix_a_variable_summary.csv` | Variable metadata and categories |
-| C | `vif_table.csv` | VIF results after LASSO |
-| (Chapter 4) | `top20_multinomial_coef_plot.png` | Top 20 predictors from multinomial model |
-
-> Note: Code snippets will be included in **Appendix E** (not committed yet)
-
----
-
-## 📎 Appendix Reference
-
-| Appendix | File | Description |
-|----------|------|-------------|
 | A.1 | `appendix_a_variable_summary.csv` | Metadata for final modeling variables (non-missing counts, categories) |
 | A.2 | `appendix_a2_categorical_summary.csv` | Distribution of categorical predictors used in the model |
 | A.3 | `appendix_a3_continuous_summary.csv` | Summary statistics (mean, std, min, max) for continuous variables |
@@ -148,6 +136,19 @@ project_root/
 
 > 💡 *All appendix files are stored in the `/output/` folder.*
 
+
+---
+
+## 🧠 Script Execution Guide
+
+| Script | When to Run | Output |
+|--------|-------------|--------|
+| `data_analysis.py` | Run if you want to review or update variable summaries | `output/gss_variable_analysis.csv` |
+| `data_filtering.py` | Run if `.dta` file or key variable list changes | `data/gss_2008_2020.csv` |
+| `generate_gss_2008_2012_partyid3.py` | Run to refresh 2008–2012 modeling dataset | `data/gss_2008_2012_partyid3.csv` |
+| `check_missing_model_vars.py` | Run if modeling variable list or missing logic changes | `output/model_var_missing_report.csv` |
+| `run_lasso_vif_pipeline.py` | Run to retrain models and output final results | `output/` folder files |
+| `appendix_a.py` | Run to export clean appendix-ready variable table | `output/appendix_a_variable_summary.csv` |
 
 ---
 

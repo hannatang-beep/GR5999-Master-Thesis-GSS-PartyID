@@ -1,4 +1,4 @@
-# 📊 GSS Data Processing Pipeline
+# 📊 Predicting Party Identification with GSS using ML
 
 This project prepares General Social Survey (GSS) data for modeling political party identification (partyID) using LASSO and other machine learning models.
 
@@ -9,7 +9,7 @@ Below is an overview of each Python module and its role in the data pipeline.
 - Constructs a final multinomial logistic regression model based on LASSO-VIF selected predictors.
 - Compares multinomial logistic regression model with tree-based classifiers (Random Forest, XGBoost)
 - Uses 5-fold stratified cross-validation to tune hyperparameters and evaluate model performance(accuracy, macro F1, AUC, Brier).
-- Outputs tables and figures for all model results and appendices.
+- Outputs summary tables and figures for all model results and appendices.
 
 ## 🧹 Files Overview
 
@@ -130,7 +130,6 @@ project_root/
 | A.3 | `appendix_a3_continuous_summary.csv` | Summary statistics (mean, std, min, max) for continuous variables |
 | B | `final_model_coefficients.csv` | Coefficient estimates from the final multinomial logistic regression model |
 | C | `vif_table_full.csv` | Variance Inflation Factor values after LASSO selection |
-| (Figure 4.1) | `top20_multinomial_coef_plot.png` | Top 20 predictors visualization from multinomial model |
 | D | (Not yet committed) | Results and configuration for Random Forest & XGBoost |
 | E | (Not yet committed) | Code snippets for all major modeling stages |
 
@@ -163,6 +162,7 @@ pip install -r requirements.txt
 
 ## ✅ Notes
 
-- All outputs (.csv, .png) are saved to /output/ and excluded from GitHub tracking via .gitignore
+- Most outputs (.csv, .png) are saved to `/output/` and excluded from GitHub tracking via `.gitignore`
+- However, selected output files used in the thesis appendices (e.g., variable summaries and Figure 4.1) are explicitly tracked and committed
 - Modeling emphasizes interpretability (via LASSO + VIF) and class balance
 - Appendices are generated using scripts to ensure reproducibility

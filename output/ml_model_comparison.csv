@@ -1,0 +1,3 @@
+Model,Best Params,Accuracy,Macro_F1
+RandomForest,"{'max_depth': None, 'min_samples_split': 5, 'n_estimators': 200}",0.9656820898070685,0.9609057772068024
+XGBoost,"{'learning_rate': 0.05, 'max_depth': 3, 'n_estimators': 200}",0.6868704114734506,0.5877324255826103

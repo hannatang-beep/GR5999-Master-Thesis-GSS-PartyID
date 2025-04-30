@@ -74,6 +74,12 @@ Below is an overview of each Python module and its role in the data pipeline.
 - Generate ROC and confusion matrix plots for both classifiers
 
 ---
+
+### `plot_model_test_performance.py`
+
+- Plot bar chart comparing test set accuracy and macro F1 (Figure 4.2)
+
+---
 ### `appendix_a.py`
 
 - Generate summary tables used in Appendices A.1–A.3:
@@ -110,11 +116,11 @@ Below is an overview of each Python module and its role in the data pipeline.
 - Plot top 20 predictors (Figure 4.1)
 
 ---
-### `aappendix_e2_ml_model_training.py`
+### `aappendix_e2_ml_model_training_testsplit.py`
 
-- Train and tune Random Forest and XGBoost using the same predictors
-- Evaluate and compare performance (accuracy, macro F1)
-- Generate Figure 4.2: Model Performance Comparison
+ - Train and tune Random Forest and XGBoost classifiers using LASSO-VIF selected variables on training data
+ - Evaluate test set performance using accuracy, macro F1, AUC, and Brier Score
+ - Save results to `ml_model_test_results.csv` and `figure_4_2_model_test_performance.png`
 
 
 ## 📂 Folder Structure
@@ -122,36 +128,54 @@ Below is an overview of each Python module and its role in the data pipeline.
 ```
 project_root/
 ├── data/                          
-│   ├── gss_2008_2020.csv
-│   └── gss_2008_2012_partyid3.csv
-├── output/                        # Results, plots, appendix exports
+│   ├── gss_2008_2020.csv                 # Filtered GSS dataset (2006–2021)
+│   ├── gss_2008_2012_partyid3.csv        # Subset with 3-class party ID (2008–2012)
+│   ├── train_balanced.csv                # Balanced training set
+│   └── test_unseen.csv                   # Held-out test set (20%)
+│
+├── output/                               # All model outputs, plots, and appendix files
 │   ├── gss_variable_analysis.csv
 │   ├── model_var_missing_report.csv
-│   ├── top20_multinomial_coef_plot.png
-│   ├── vif_table_full.csv
-│   ├──appendix_a_variable_summary.csv
-│   ├──appendix_a2_categorical_summary.csv
-│   ├──appendix_a3_continuous_summary.csv   
-│   ├── ml_model_comparison.csv
-│   ├── figure_4_2_model_performance.png
-│   ├── confusion_matrix_randomforest.png
-│   ├── confusion_matrix_xgboost.png
-│   ├── roc_curve_randomforest.png
-│   └── roc_curve_xgboost.png
-├── python scripts/                # All analysis code
+│   ├── final_X_after_vif.csv             # Final predictors after LASSO + VIF
+│   ├── y_train.csv                       # Training labels
+│   ├── final_model_coefficients.csv
+│   ├── lasso_coefficients_by_class.csv   # Appendix B: Coefficient table
+│   ├── vif_table_full.csv                # Appendix C: Full VIF table
+│
+│   ├── ml_model_comparison.csv           # (deprecated: in-sample scores)
+│   ├── ml_model_test_results.csv         # ✅ Updated: test set scores (accuracy, F1, AUC, Brier)
+│
+│   ├── figure_4_1_top20_coef.png         # Figure 4.1: Top predictors from LASSO
+│   ├── figure_4_2_model_test_performance.png   # ✅ Figure 4.2: Accuracy & F1 on test set
+│   ├── roc_curve_randomforest.png        # Figure 4.3 RF: ROC curve (OvR)
+│   ├── roc_curve_xgboost.png             # Figure 4.3 XGB: ROC curve (OvR)
+│   ├── confusion_matrix_randomforest.png # Appendix D.1
+│   ├── confusion_matrix_xgboost.png      # Appendix D.2
+│
+│   ├── appendix_a_variable_summary.csv   # Appendix A.1
+│   ├── appendix_a2_categorical_summary.csv  # Appendix A.2
+│   ├── appendix_a3_continuous_summary.csv  # Appendix A.3
+│
+├── python scripts/                       # All modeling and processing scripts
 │   ├── data_analysis.py
 │   ├── data_filtering.py
 │   ├── generate_gss_2008_2012_partyid3.py
 │   ├── check_missing_model_vars.py
 │   ├── run_lasso_vif_pipeline.py
-│   ├── run_ml_models.py              
-│   ├── evaluate_model_scores.py      
+│   ├── run_ml_models.py                  # (legacy, pre-test split version)
+│   ├── appendix_e2_ml_model_training.py  # (legacy)
+│   ├── appendix_e2_ml_model_training_testsplit.py  # ✅ Updated: RF/XGB on train-test split
+│   ├── evaluate_model_scores.py
+│   ├── plot_model_test_performance.py    # ✅ Plots Figure 4.2 bar chart
 │   ├── appendix_a.py
-│   ├── appendix_e1_lasso_vif_final_model.py  
-│   └── appendix_e2_ml_model_training.py       
-├── requirements.txt              # Python dependencies
-├── .gitignore                    # Exclude local files from GitHub
-└── README.md                     # Project overview (this file)
+│   ├── appendix_b.py
+│   ├── appendix_c.py
+│   └── appendix_e1_lasso_vif_final_model.py
+│
+├── requirements.txt
+├── .gitignore
+└── README.md
+
 ```
 
 ---
@@ -166,6 +190,10 @@ project_root/
 | B | `lasso_coefficients_by_class.csv` | Pivoted coefficient table showing impact of variables per party category |
 | C | `vif_table_full.csv` | Full Variance Inflation Factor table, including dropped predictors |
 | D | `ml_model_comparison.csv` + plots | Classifier outputs, accuracy comparison (Figure 4.2), ROC, confusion matrix |
+| D.1 | `confusion_matrix_randomforest.png` | Random Forest test set confusion matrix |
+| D.2 | `confusion_matrix_xgboost.png` | XGBoost test set confusion matrix |
+| D.3 | `roc_curve_randomforest.png` | One-vs-rest ROC for Random Forest |
+| D.4 | `roc_curve_xgboost.png` | One-vs-rest ROC for XGBoost |
 | E.1 | *(code snippet)* | LASSO + VIF + final model (multinomial logistic regression) |
 | E.2 | *(code snippet)* | ML model training and performance visualization |
 

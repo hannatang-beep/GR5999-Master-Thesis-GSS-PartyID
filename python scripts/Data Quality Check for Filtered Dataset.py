@@ -2,6 +2,9 @@ def check_filtered_data_quality(df):
     """
     Perform quality checks on the filtered dataset
     """
+    import pandas as pd
+    import numpy as np
+    
     print("\n=== Data Quality Report ===\n")
     
     # 1. Missing value analysis

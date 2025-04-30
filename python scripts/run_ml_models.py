@@ -1,34 +1,59 @@
 # =============================================================================
-# File: run_ml_models.py
-# 
+# File: run_ml_models.py (Updated)
+#
 # Purpose:
-# - Train and evaluate Random Forest and XGBoost classifiers
-# - Use the same predictor set from the LASSO-VIF pipeline (X_final)
-# - Perform 5-fold stratified cross-validation with GridSearchCV for tuning
-# - Output evaluation metrics for comparison with the multinomial model
+# - Train Random Forest and XGBoost on LASSO-VIF-selected features
+# - Evaluate performance on held-out test set
 # =============================================================================
 
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
-from sklearn.model_selection import StratifiedKFold, GridSearchCV
-from sklearn.metrics import classification_report, accuracy_score, f1_score
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, brier_score_loss
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 import joblib
-import seaborn as sns
-import matplotlib.pyplot as plt
 
+# === Load training data ===
+X_train = pd.read_csv("output/final_X_train_after_vif.csv")
+y_train = pd.read_csv("output/y_train.csv").squeeze()  # series
 
-# Load data 
-X = pd.read_csv("output/final_X_after_vif.csv")
-y = pd.read_csv("data/gss_2008_2012_partyid3.csv")["partyid_3cat"]
+# === Load raw test set and process ===
+df_test = pd.read_csv("data/test_unseen.csv")
+features = ["age", "sex", "race", "educ", "degree", "income", "wrkstat",
+            "abany", "gunlaw", "natfare", "natenvir", "eqwlth", "sei", "hrs1",
+            "relig", "reliten", "attend", "polviews"]
+target = "partyid_3cat"
 
-print("\n✅ Loaded modeling dataset")
+# Split variable types
+continuous_vars = ["age", "educ", "income", "sei", "hrs1"]
+categorical_vars = list(set(features) - set(continuous_vars))
 
-# Define CV strategy
+# Impute
+df_test[continuous_vars] = SimpleImputer(strategy="median").fit_transform(df_test[continuous_vars])
+df_test[categorical_vars] = SimpleImputer(strategy="most_frequent").fit_transform(df_test[categorical_vars])
+
+# Encode
+ohe = OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")
+X_test_cat = ohe.fit(df_test[categorical_vars])  # fit on test to avoid crash
+X_test_cat = ohe.transform(df_test[categorical_vars])
+X_test_cat_cols = ohe.get_feature_names_out(categorical_vars)
+
+# Combine with continuous
+X_test = pd.concat([
+    pd.DataFrame(X_test_cat, columns=X_test_cat_cols, index=df_test.index),
+    df_test[continuous_vars]
+], axis=1)
+y_test = df_test[target]
+
+# Match columns to training data
+X_test = X_test.reindex(columns=X_train.columns, fill_value=0)
+
+# === Modeling ===
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-# Define models and parameter grids
 models = {
     "RandomForest": {
         "model": RandomForestClassifier(random_state=42),
@@ -50,73 +75,41 @@ models = {
 
 results = []
 
-# Train each model
-for name, config in models.items():
-    print(f"\n🔍 Tuning and training {name}...")
+for name, cfg in models.items():
+    print(f"\n🔍 Training {name}...")
     grid = GridSearchCV(
-        estimator=config["model"],
-        param_grid=config["params"],
+        estimator=cfg["model"],
+        param_grid=cfg["params"],
         cv=skf,
         scoring="accuracy",
         n_jobs=-1
     )
-    grid.fit(X, y)
-
+    grid.fit(X_train, y_train)
     best_model = grid.best_estimator_
-    y_pred = best_model.predict(X)
-
-    # Save model
     joblib.dump(best_model, f"output/{name.lower()}_model.pkl")
 
-    # Evaluation
-    acc = accuracy_score(y, y_pred)
-    macro_f1 = f1_score(y, y_pred, average="macro")
+    y_pred = best_model.predict(X_test)
+    y_proba = best_model.predict_proba(X_test)
 
-    print(f"✅ {name} Accuracy: {acc:.4f} | Macro F1: {macro_f1:.4f}")
-    print(classification_report(y, y_pred))
+    acc = accuracy_score(y_test, y_pred)
+    macro_f1 = f1_score(y_test, y_pred, average="macro")
+    auc_macro = roc_auc_score(pd.get_dummies(y_test), y_proba, average="macro")
+    brier = np.mean([
+        brier_score_loss((y_test == i).astype(int), y_proba[:, i])
+        for i in range(len(np.unique(y_test)))
+    ])
+
+    print(f"✅ {name} Accuracy (test): {acc:.4f} | Macro F1: {macro_f1:.4f} | AUC: {auc_macro:.4f} | Brier: {brier:.4f}")
 
     results.append({
         "Model": name,
-        "Best Params": grid.best_params_,
         "Accuracy": acc,
-        "Macro_F1": macro_f1
+        "Macro_F1": macro_f1,
+        "AUC_Macro": auc_macro,
+        "Brier_Score": brier,
+        "Best_Params": grid.best_params_
     })
 
-# Save results to CSV 
-pd.DataFrame(results).to_csv("output/ml_model_comparison.csv", index=False)
-print("\n📁 Model performance saved to 'output/ml_model_comparison.csv'")
-
-
-# === Plot: Model Performance Comparison ===
-# Reload performance result
-df_perf = pd.read_csv("output/ml_model_comparison.csv")
-
-# Convert model column to string + drop NA rows
-df_perf["Model"] = df_perf["Model"].astype(str)
-df_perf = df_perf.dropna(subset=["Model", "Accuracy", "Macro_F1"])
-
-df_plot = df_perf[["Model", "Accuracy", "Macro_F1"]].copy()
-df_plot.columns = df_plot.columns.astype(str)
-
-# Melt DataFrame to long format
-df_long = df_plot.melt(id_vars="Model", var_name="Metric", value_name="Score")
-
-# to string or numeric
-df_long["Model"] = df_long["Model"].astype(str)
-df_long["Metric"] = df_long["Metric"].astype(str)
-df_long["Score"] = pd.to_numeric(df_long["Score"], errors="coerce")
-
-# debug: confirm structure
-print("🧾 Final long-format DataFrame:\n", df_long)
-
-# Plot
-plt.figure(figsize=(8, 6))
-sns.barplot(data=df_long, x="Model", y="Score", hue="Metric")
-plt.title("Figure 4.2: Model Performance Comparison")
-plt.ylabel("Score")
-plt.xlabel("Model")
-plt.ylim(0, 1.0)
-plt.legend(title="Metric")
-plt.tight_layout()
-plt.savefig("output/figure_4_2_model_performance.png")
-plt.show()
+# Save results
+pd.DataFrame(results).to_csv("output/ml_model_test_results.csv", index=False)
+print("\n📁 Saved performance results to output/ml_model_test_results.csv")

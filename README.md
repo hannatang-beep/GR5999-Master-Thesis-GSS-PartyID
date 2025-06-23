@@ -143,10 +143,10 @@ project_root/
 │   ├── vif_table_full.csv                # Appendix C: Full VIF table
 │
 │   ├── ml_model_comparison.csv           # (deprecated: in-sample scores)
-│   ├── ml_model_test_results.csv         # ✅ Updated: test set scores (accuracy, F1, AUC, Brier)
+│   ├── ml_model_test_results.csv         # Updated: test set scores (accuracy, F1, AUC, Brier)
 │
 │   ├── figure_4_1_top20_coef.png         # Figure 4.1: Top predictors from LASSO
-│   ├── figure_4_2_model_test_performance.png   # ✅ Figure 4.2: Accuracy & F1 on test set
+│   ├── figure_4_2_model_test_performance.png   # Figure 4.2: Accuracy & F1 on test set
 │   ├── roc_curve_randomforest.png        # Figure 4.3 RF: ROC curve (OvR)
 │   ├── roc_curve_xgboost.png             # Figure 4.3 XGB: ROC curve (OvR)
 │   ├── confusion_matrix_randomforest.png # Appendix D.1
@@ -164,9 +164,9 @@ project_root/
 │   ├── run_lasso_vif_pipeline.py
 │   ├── run_ml_models.py                  # (legacy, pre-test split version)
 │   ├── appendix_e2_ml_model_training.py  # (legacy)
-│   ├── appendix_e2_ml_model_training_testsplit.py  # ✅ Updated: RF/XGB on train-test split
+│   ├── appendix_e2_ml_model_training_testsplit.py  # Updated: RF/XGB on train-test split
 │   ├── evaluate_model_scores.py
-│   ├── plot_model_test_performance.py    # ✅ Plots Figure 4.2 bar chart
+│   ├── plot_model_test_performance.py    # Plots Figure 4.2 bar chart
 │   ├── appendix_a.py
 │   ├── appendix_b.py
 │   ├── appendix_c.py
@@ -229,7 +229,7 @@ pip install -r requirements.txt
 
 ---
 
-## ✅ Notes
+## Notes
 
 - Most outputs are saved to `/output/` and excluded from GitHub tracking via `.gitignore`
 - However, selected appendix-related results (e.g., model coefficients, ROC plots, Figure 4.1/4.2) are tracked and committed to ensure thesis reproducibility

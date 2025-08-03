@@ -58,6 +58,6 @@ df_train_balanced = pd.concat(balanced_df)
 df_train_balanced.to_csv("data/train_balanced.csv", index=False)
 df_test.to_csv("data/test_unseen.csv", index=False)
 
-print("✅ Saved training (balanced): data/train_balanced.csv")
-print("✅ Saved test set (unseen): data/test_unseen.csv")
+print("Saved training (balanced): data/train_balanced.csv")
+print("Saved test set (unseen): data/test_unseen.csv")
 print(f"Train size: {df_train_balanced.shape[0]}, Test size: {df_test.shape[0]}")

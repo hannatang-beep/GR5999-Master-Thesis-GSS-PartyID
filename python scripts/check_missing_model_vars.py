@@ -19,7 +19,7 @@ import pandas as pd
 file_path = "data/gss_2008_2012_partyid3.csv"
 df = pd.read_csv(file_path)
 
-print("\n✅ Loaded dataset:", file_path)
+print("\n Loaded dataset:", file_path)
 print("Shape:", df.shape)
 
 # Calculate missing value percentage 
@@ -52,7 +52,7 @@ modeling_vars = [
 
 # Drop rows with any missing in modeling variables
 df_model = df[modeling_vars].dropna()
-print(f"\n✅ Remaining observations after dropping missing: {len(df_model)}")
+print(f"\n Remaining observations after dropping missing: {len(df_model)}")
 
 # Plot missing value bar chart ===
 import matplotlib.pyplot as plt
@@ -71,4 +71,4 @@ plt.title("Missing Values by Variable (Modeling Variables)")
 plt.gca().invert_yaxis()
 plt.tight_layout()
 plt.savefig("output/missing_model_vars.png")
-print("\n✅ Missing value plot saved to: output/missing_model_vars.png")
+print("\n Missing value plot saved to: output/missing_model_vars.png")

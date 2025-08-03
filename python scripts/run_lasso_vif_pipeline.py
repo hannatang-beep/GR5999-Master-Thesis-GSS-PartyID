@@ -16,7 +16,7 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 # Load balanced training data
 df = pd.read_csv("data/train_balanced.csv")
-print(f"\n✅ Loaded balanced training set — shape: {df.shape}")
+print(f"\ Loaded balanced training set — shape: {df.shape}")
 
 # Define target and feature list
 target = "partyid_3cat"
@@ -61,7 +61,7 @@ lasso = LogisticRegressionCV(
     random_state=42
 )
 lasso.fit(X_scaled, y)
-print("✅ LASSO model trained")
+print(" LASSO model trained")
 
 # Select non-zero variables
 coef_matrix = pd.DataFrame(lasso.coef_, columns=X_scaled.columns)
@@ -77,12 +77,12 @@ while True:
     )
     if vif_series.max() > 5:
         drop_var = vif_series.idxmax()
-        print(f"⚠️ Dropping '{drop_var}' due to VIF = {vif_series.max():.2f}")
+        print(f" Dropping '{drop_var}' due to VIF = {vif_series.max():.2f}")
         X_vif = X_vif.drop(columns=drop_var)
     else:
         break
 
-print(f"✅ Final predictors after VIF: {X_vif.shape[1]}")
+print(f" Final predictors after VIF: {X_vif.shape[1]}")
 
 # Train final multinomial model (no penalty)
 final_model = LogisticRegression(
@@ -92,7 +92,7 @@ final_model = LogisticRegression(
     max_iter=10000
 )
 final_model.fit(X_vif, y)
-print("✅ Final multinomial model trained")
+print(" Final multinomial model trained")
 
 # Save outputs
 X_vif.to_csv("output/final_X_train_after_vif.csv", index=False)
@@ -100,7 +100,7 @@ pd.Series(y).to_csv("output/y_train.csv", index=False)
 coef_df = pd.DataFrame(final_model.coef_, columns=X_vif.columns)
 coef_df.to_csv("output/final_model_coefficients.csv", index=False)
 
-print("📁 Outputs saved to /output/:")
+print(" Outputs saved to /output/:")
 print("- final_X_train_after_vif.csv")
 print("- y_train.csv")
 print("- final_model_coefficients.csv")

@@ -49,11 +49,11 @@ def analyze_gss_variables(file_path):
         var_df = pd.DataFrame(var_info)
         var_df = var_df.sort_values('non_null_count', ascending=False)
 
-        # ✅ Categorize variables before saving
+        # Categorize variables before saving
         var_df = categorize_variables(var_df)
 
         var_df.to_csv('output/gss_variable_analysis.csv', index=False)
-        print("\n✅ Variable analysis with categories saved to 'output/gss_variable_analysis.csv'")
+        print("\nVariable analysis with categories saved to 'output/gss_variable_analysis.csv'")
         print(f"\nTotal variables: {len(var_df)}")
         print(f"Variables with >50% non-null values: {len(var_df[var_df['non_null_count'] > len(df)/2])}")
 

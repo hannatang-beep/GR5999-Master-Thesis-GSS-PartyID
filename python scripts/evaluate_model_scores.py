@@ -95,5 +95,5 @@ for name in model_names:
         for i in range(len(class_names))
     ])
 
-    print(f"✅ AUC (macro): {auc_macro:.4f}")
-    print(f"✅ Brier Score: {brier:.4f}")
+    print(f" AUC (macro): {auc_macro:.4f}")
+    print(f" Brier Score: {brier:.4f}")
